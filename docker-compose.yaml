@@ -1,0 +1,30 @@
+version: '2'
+services:
+  postgres:
+    image: postgres:9.6.6
+    restart: always
+    environment:
+      - POSTGRES_PASSWORD=nicesecret
+    ports:
+      - "5432"
+    volumes:
+      - bonitaetdb:/var/lib/postgresql/data
+  bonitaet:
+    build: .
+    ports:
+      - "3000:3000"
+    hostname: bonitaet
+    command: "/bin/bash -c 'rake docker:pause_for_db && rake db:create && rake docker:create_postgres_extensions && rake db:migrate && rake import:figo_supported_stuff && rake import:from_figo && foreman start web'"
+    links:
+      - postgres
+    environment:
+      - DATABASE_URL=postgres://postgres:nicesecret@postgres:5432/bonitaet
+
+networks:
+  default:
+    external:
+      name: bonitaetnet
+
+volumes:
+  bonitaetdb:
+   external: true

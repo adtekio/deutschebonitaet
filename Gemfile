@@ -32,7 +32,7 @@ gem 'figo', :github => "gorenje/ruby-figo"
 gem 'bank_account_import', :github => 'gorenje/bank_account_import'
 gem 'cmxl', :github => 'gorenje/cmxl', :ref => '86653b4423bafe33fc91aa3ff86207f380a2854e'
 gem 'iban-tools', :github => 'alphasights/iban-tools', :ref => '534a06be92c049c95923cd555a920459762e1d2c'
-
+gem 'net-ping'
 group :development do
   gem 'html2haml'
   gem 'dotenv', :github => 'gorenje/dotenv', :branch => 'squaure_brackets'

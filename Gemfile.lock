@@ -137,6 +137,7 @@ GEM
     multi_xml (0.6.0)
     net-http-digest_auth (1.4.1)
     net-http-persistent (2.9.4)
+    net-ping (2.0.2)
     nokogiri (1.7.1)
       mini_portile2 (~> 2.1.0)
     ntlm-http (0.1.1)
@@ -233,6 +234,7 @@ DEPENDENCIES
   launchy
   mailchimp
   mechanize
+  net-ping
   pg
   pry
   rake (= 10.5.0)
@@ -248,4 +250,4 @@ RUBY VERSION
    ruby 2.2.5p319
 
 BUNDLED WITH
-   1.15.0
+   1.16.0
