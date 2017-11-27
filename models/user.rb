@@ -161,7 +161,7 @@ class User < ActiveRecord::Base
            :has_confirmed    => false,
            :confirm_token    => params[:confirm_token])
 
-    "#{$hosthandler.dashboard.url}/user/emailconfirm?%s" % {
+    "#{$hosthandler.login.url}/user/emailconfirm?%s" % {
       :email => params[:email], :token => params[:token] }.to_query
   end
 

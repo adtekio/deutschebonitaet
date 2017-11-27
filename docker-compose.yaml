@@ -6,19 +6,47 @@ services:
     environment:
       - POSTGRES_PASSWORD=nicesecret
     ports:
-      - "5432"
+      - "5432:5432"
     volumes:
       - bonitaetdb:/var/lib/postgresql/data
+
   bonitaet:
     build: .
     ports:
-      - "3000:3000"
-    hostname: bonitaet
-    command: "/bin/bash -c 'rake docker:pause_for_db && rake db:create && rake docker:create_postgres_extensions && rake db:migrate && rake import:figo_supported_stuff && rake import:from_figo && foreman start web'"
+      - "3003:3003"
+    command: "/bin/bash -c 'rake docker:pause_for_db      && \
+                            rake docker:if_db_is_migrated && \
+                            rake appjson:to_dotenv        && \
+                            foreman start web'"
+    links:
+      - postgres
+    environment:
+      - PORT=3003
+      - DATABASE_URL=postgres://postgres:nicesecret@postgres:5432/bonitaet
+      - LOGIN_HOST=localhost:3003
+      - BADGE_HOST=localhost:3003
+      - DOCKER_ENV_STORE=/var/lib/bonitaet/env
+    volumes:
+      - bonitaetenv:/var/lib/bonitaet/env
+    restart: always
+
+  bonitaet-migrate-db:
+    build: .
+    command: "/bin/bash -c 'rake docker:pause_for_db               && \
+                            rake docker:if_db_not_migrated         && \
+                            rake appjson:to_dotenv                 && \
+                            rake db:create                         && \
+                            rake docker:create_postgres_extensions && \
+                            rake db:migrate                        && \
+                            rake import:figo_supported_stuff       && \
+                            rake import:from_figo'"
     links:
       - postgres
     environment:
       - DATABASE_URL=postgres://postgres:nicesecret@postgres:5432/bonitaet
+      - DOCKER_ENV_STORE=/var/lib/srtupnet/env
+    volumes:
+      - bonitaetenv:/var/lib/bonitaet/env
 
 networks:
   default:
@@ -27,4 +55,6 @@ networks:
 
 volumes:
   bonitaetdb:
-   external: true
+    external: true
+  bonitaetenv:
+    external: true

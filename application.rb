@@ -54,10 +54,5 @@ before do
   redirect("https://#{request.host}") if redirect_host_to_ssl?
   redirect("https://www.#{request.host}") if redirect_host_to_www?
 
-  unless session[:authenticated] ||
-      request.path_info =~ /^\/(auth)/
-    redirect '/auth'
-  end
-
   must_be_logged_in unless page_can_be_viewed_while_not_logged_in
 end

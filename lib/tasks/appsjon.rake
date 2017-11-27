@@ -15,7 +15,14 @@ namespace :appjson do
     File.open('.env', "w+") do |file|
       file << "## Environment for #{cfg["name"]}"
 
+      cfg["env"]["RACK_ENV"]["value"] = "development" if cfg["env"]["RACK_ENV"]
+
       cfg["env"].each do |name, hsh|
+        next if ENV["DOCKER_ENV_STORE"] &&
+                ["PORT", "DATABASE_URL", "LOGIN_HOST",
+                 "BADGE_HOST"].include?(name)
+
+
         req = (hsh["required"]==false) ? "No" : "Yes"
         hsh['value'] = if hsh['generator'] == "secret"
                          SecureRandom.uuid.gsub(/-/,'')
@@ -42,6 +49,18 @@ namespace :appjson do
 
         file << ["## #{hsh["description"]} (Required? #{req})",
                  "#{name}=#{hsh['value']}", "", ""].join("\n")
+      end
+    end
+
+    # Check whether we're in docker environment
+    if storepath = ENV["DOCKER_ENV_STORE"]
+      FileUtils.mkdir_p(storepath)
+      if File.exists?(File.join(storepath,".env"))
+        puts "Copying existing env"
+        File.open('.env', "w+") << File.read(File.join(storepath,".env"))
+      else
+        puts "Creating persistent env file"
+        File.open(File.join(storepath,".env"), "w+") << File.read(".env")
       end
     end
   end

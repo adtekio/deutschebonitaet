@@ -1,4 +1,4 @@
-class AddFigoSupportedBanks < ActiveRecord::Migration
+class AddFigoSupportedBanks < ActiveRecord::Migration[4.2]
   def change
     create_table :figo_supported_banks do |t|
       t.string :bank_name

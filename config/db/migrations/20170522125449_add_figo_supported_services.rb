@@ -1,4 +1,4 @@
-class AddFigoSupportedServices < ActiveRecord::Migration
+class AddFigoSupportedServices < ActiveRecord::Migration[4.2]
   def change
     create_table :figo_supported_services do |t|
       t.string :name

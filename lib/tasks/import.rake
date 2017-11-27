@@ -3,7 +3,7 @@ namespace :import do
     Import all banks supported by figo.
   EOF
   task :figo_supported_stuff do
-    (FigoHelper.get_banks + [FigoDemoBank]).each do |bnk|
+    ((FigoHelper.get_banks rescue []) + [FigoDemoBank]).each do |bnk|
       FigoSupportedBank.where(:bank_code => bnk["bank_code"]).
         first_or_create.
         update(:bank_name    => bnk["bank_name"],
@@ -18,7 +18,7 @@ namespace :import do
         update(:name         => srv["name"],
                :advice       => srv["advice"],
                :details_json => srv.to_json)
-    end
+    end rescue nil
   end
 
   desc <<-EOF

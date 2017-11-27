@@ -3,7 +3,7 @@ source 'http://rubygems.org'
 
 ruby '2.2.5'
 
-gem 'rake', '10.5.0'
+gem 'rake'
 
 gem 'pry'
 gem 'json'

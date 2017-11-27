@@ -10,13 +10,20 @@ end
 get '/resend/email/:eid' do
   if user = User.find_by_external_id(params[:eid])
     unless user.has_confirmed?
-      Mailer::Client.new.
-        send_confirm_email({"confirm_link" =>
-                             user.generate_email_confirmation_link,
-                             "email"     => user.email,
-                             "firstname" => user.name,
-                             "lastname"  => ""})
-      session[:message] = "Confirmation Email resent."
+      confirm_link = user.generate_email_confirmation_link
+
+      session[:message] =
+        if ENV["MANDRILL_API_KEY"].empty?
+          "Mandrill not configured, <a href='"  +
+            confirm_link + "'>Click here</a> to confirm email."
+        else
+          Mailer::Client.new.
+            send_confirm_email({"confirm_link" => confirm_link,
+                                "email"        => user.email,
+                                "firstname"    => user.name,
+                                "lastname"     => ""})
+          "Confirmation Email resent."
+        end
     else
       session[:message] = "Email already confirmed, <a href='/login'>"+
         "Login</a>."
@@ -51,17 +58,24 @@ post '/login' do
       else
         u = User.create(:email => data["email"].downcase,
                         :name => data["name"])
-        u.password = data["password1"]
-        Mailer::Client.new.
-          send_confirm_email({"confirm_link" =>
-                               u.generate_email_confirmation_link,
-                             "email"     => u.email,
-                             "firstname" => u.name,
-                             "lastname"  => ""})
 
-        session[:message] = ("Thank You! Confirmation email has been sent." +
-                             "Once you have confirmed your email, you may " +
-                             "login.")
+        u.password   = data["password1"]
+        confirm_link = u.generate_email_confirmation_link
+
+        session[:message] =
+          if ENV["MANDRILL_API_KEY"].empty?
+            "Mandrill not configured, <a href='"  +
+              confirm_link + "'>Click here</a> to confirm email."
+          else
+            Mailer::Client.new.
+              send_confirm_email({"confirm_link"  => confirm_link,
+                                  "email"         => u.email,
+                                  "firstname"     => u.name,
+                                  "lastname"      => ""})
+            "Thank You! Confirmation email has been sent." +
+              "Once you have confirmed your email, you may " +
+              "login."
+          end
       end
     end
     haml :register

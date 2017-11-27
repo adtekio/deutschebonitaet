@@ -71,10 +71,6 @@
       "description": "Mandrill API Key to send emails.",
       "required": true
     },
-    "DASHBOARD_HOST": {
-      "description": "Host of the dashboard",
-      "value": "localhost:3000"
-    },
     "LOGIN_HOST": {
       "description": "Login host, usual the same as the dashboard",
       "value": "localhost:3000"

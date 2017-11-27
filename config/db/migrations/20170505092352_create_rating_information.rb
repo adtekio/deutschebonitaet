@@ -1,4 +1,4 @@
-class CreateRatingInformation < ActiveRecord::Migration
+class CreateRatingInformation < ActiveRecord::Migration[4.2]
   def change
     create_table :ratings do |t|
       t.integer :score
