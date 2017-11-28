@@ -84,7 +84,7 @@ post '/login' do
     if user = User.where(:email => data["email"].downcase).first
       if user.has_confirmed?
         if user.password_match?(data["password"])
-          user.create_or_update_figo_account
+          user.create_or_update_figo_account rescue nil
           session[:user_id] = user.id
           redirect "/"
         else

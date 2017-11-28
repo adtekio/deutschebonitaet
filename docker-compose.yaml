@@ -25,6 +25,7 @@ services:
       - DATABASE_URL=postgres://postgres:nicesecret@postgres:5432/bonitaet
       - LOGIN_HOST=localhost:3003
       - BADGE_HOST=localhost:3003
+      - FIGO_REDIRECT_URL=http://localhost:3003
       - DOCKER_ENV_STORE=/var/lib/bonitaet/env
     volumes:
       - bonitaetenv:/var/lib/bonitaet/env
@@ -44,7 +45,7 @@ services:
       - postgres
     environment:
       - DATABASE_URL=postgres://postgres:nicesecret@postgres:5432/bonitaet
-      - DOCKER_ENV_STORE=/var/lib/srtupnet/env
+      - DOCKER_ENV_STORE=/var/lib/bonitaet/env
     volumes:
       - bonitaetenv:/var/lib/bonitaet/env
 

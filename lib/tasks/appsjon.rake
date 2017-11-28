@@ -20,7 +20,7 @@ namespace :appjson do
       cfg["env"].each do |name, hsh|
         next if ENV["DOCKER_ENV_STORE"] &&
                 ["PORT", "DATABASE_URL", "LOGIN_HOST",
-                 "BADGE_HOST"].include?(name)
+                 "BADGE_HOST", "FIGO_REDIRECT_URL"].include?(name)
 
 
         req = (hsh["required"]==false) ? "No" : "Yes"
