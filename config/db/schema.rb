@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170615082917) do
+ActiveRecord::Schema.define(version: 20170627130759) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -53,6 +53,7 @@ ActiveRecord::Schema.define(version: 20170615082917) do
     t.string "bank_code"
     t.text "advice"
     t.text "details_json"
+    t.string "bic"
     t.index ["bank_code"], name: "index_figo_supported_banks_on_bank_code"
   end
 

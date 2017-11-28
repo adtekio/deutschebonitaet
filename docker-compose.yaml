@@ -8,12 +8,12 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - bonitaetdb:/var/lib/postgresql/data
+      - credratdb:/var/lib/postgresql/data
 
-  bonitaet:
+  credrat:
     build: .
     ports:
-      - "3003:3003"
+      - "3000:3000"
     command: "/bin/bash -c 'rake docker:pause_for_db      && \
                             rake docker:if_db_is_migrated && \
                             rake appjson:to_dotenv        && \
@@ -21,17 +21,18 @@ services:
     links:
       - postgres
     environment:
-      - PORT=3003
-      - DATABASE_URL=postgres://postgres:nicesecret@postgres:5432/bonitaet
-      - LOGIN_HOST=localhost:3003
-      - BADGE_HOST=localhost:3003
-      - FIGO_REDIRECT_URL=http://localhost:3003
-      - DOCKER_ENV_STORE=/var/lib/bonitaet/env
+      - PORT=3000
+      - LOGIN_HOST=localhost:3000
+      - BADGE_HOST=localhost:3000
+      - FIGO_REDIRECT_URL=http://localhost:3000
+      - FIGO_DEMO_ACCESS_TOKEN=ASHWLIkouP2O6_bgA2wWReRhletgWKHYjLqDaqb0LFfamim9RjexTo22ujRIP_cjLiRiSyQXyt2kM1eXU2XLFZQ0Hro15HikJQT_eNeT_9XQ
+      - DATABASE_URL=postgres://postgres:nicesecret@postgres:5432/credrat
+      - DOCKER_ENV_STORE=/var/lib/credrat/env
     volumes:
-      - bonitaetenv:/var/lib/bonitaet/env
+      - credratenv:/var/lib/credrat/env
     restart: always
 
-  bonitaet-migrate-db:
+  credrat-migrate-db:
     build: .
     command: "/bin/bash -c 'rake docker:pause_for_db               && \
                             rake docker:if_db_not_migrated         && \
@@ -39,23 +40,39 @@ services:
                             rake db:create                         && \
                             rake docker:create_postgres_extensions && \
                             rake db:migrate                        && \
-                            rake import:figo_supported_stuff       && \
-                            rake import:from_figo'"
+                            rake import:figo_supported_stuff'"
     links:
       - postgres
     environment:
-      - DATABASE_URL=postgres://postgres:nicesecret@postgres:5432/bonitaet
-      - DOCKER_ENV_STORE=/var/lib/bonitaet/env
+      - DATABASE_URL=postgres://postgres:nicesecret@postgres:5432/credrat
+      - DOCKER_ENV_STORE=/var/lib/credrat/env
     volumes:
-      - bonitaetenv:/var/lib/bonitaet/env
+      - credratenv:/var/lib/credrat/env
+
+  credrat-rolling-imports:
+    build: .
+    command: "/bin/bash -c 'rake docker:pause_for_db               && \
+                            rake docker:if_db_is_migrated          && \
+                            rake appjson:to_dotenv                 && \
+                            sleep 600                              && \
+                            rake import:from_figo                  && \
+                            rake ratings:compute'"
+    links:
+      - postgres
+    environment:
+      - DATABASE_URL=postgres://postgres:nicesecret@postgres:5432/credrat
+      - DOCKER_ENV_STORE=/var/lib/credrat/env
+    volumes:
+      - credratenv:/var/lib/credrat/env
+    restart: always
 
 networks:
   default:
     external:
-      name: bonitaetnet
+      name: credratnet
 
 volumes:
-  bonitaetdb:
+  credratdb:
     external: true
-  bonitaetenv:
+  credratenv:
     external: true

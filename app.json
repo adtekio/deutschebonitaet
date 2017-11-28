@@ -1,12 +1,11 @@
 {
-  "name" : "Deutsche Bonitaet",
+  "name" : "Credit Rating",
   "description": "Provide a Credit Rating using Bank Account Data",
   "keywords": [
     "fintech",
     "credit rating"
   ],
-  "website": "https://www.deutsch-bonitaet.de",
-  "repository": "https://github.com/adtekio/deutschebonitaet",
+  "repository": "https://github.com/gorenje/credit.rating",
   "scripts": {
     "postdeploy": "bundle exec rake db:migrate import:figo_supported_stuff"
   },

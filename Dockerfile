@@ -1,7 +1,6 @@
 FROM ruby:2.2.5
 WORKDIR /usr/src/app
 ENV LANG C.UTF-8
-RUN apt-get update -qq && apt-get install -y nmap
 COPY Gemfile .
 COPY Gemfile.lock .
 RUN gem install bundler

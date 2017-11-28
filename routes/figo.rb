@@ -17,6 +17,11 @@ get '/callback*' do
   redirect "/accounts"
 end
 
+get '/update_accounts_from_figo' do
+  User.find(session[:user_id]).update_accounts_from_figo rescue nil
+  redirect '/accounts'
+end
+
 get '/logout' do
   session.delete(:user_id)
   redirect '/'

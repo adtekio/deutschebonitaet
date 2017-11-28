@@ -81,7 +81,7 @@ class User < ActiveRecord::Base
   end
 
   def has_figo_account?
-    !!self.creds["figo_password"]
+    !!self.creds["figo_password"] || !!figo_access_token
   end
 
   def email_confirm_token_matched?(token, slt)
@@ -126,20 +126,28 @@ class User < ActiveRecord::Base
   end
 
   def create_or_update_figo_account
-    return if self.creds["figo_recovery_password"]
+    if ENV['FIGO_DEMO_ACCESS_TOKEN']
+      self.figo_access_token = ENV['FIGO_DEMO_ACCESS_TOKEN']
+    else
+      return if self.creds["figo_recovery_password"]
 
-    figo_password = PasswordGenerator.generate_password
-    recovery_password = $figo_connection.
-      create_user(name, email, figo_password)["recovery_password"]
+      figo_password = PasswordGenerator.generate_password
+      recovery_password = $figo_connection.
+                  create_user(name, email, figo_password)["recovery_password"]
 
-    self.creds = self.creds.
-      merge({"figo_recovery_password" => recovery_password,
-             "figo_password"          => figo_password})
+      self.creds = self.creds.
+                     merge({"figo_recovery_password" => recovery_password,
+                            "figo_password"          => figo_password})
+    end
   end
 
   def start_figo_session
-    data = $figo_connection.credential_login(email,self.creds["figo_password"])
-    Figo::Session.new(data["access_token"])
+    if figo_access_token.empty?
+      data = $figo_connection.
+               credential_login(email,self.creds["figo_password"])
+      self.figo_access_token = data["access_token"]
+    end
+    Figo::Session.new(figo_access_token)
   end
 
   def generate_email_token(more_args = {})

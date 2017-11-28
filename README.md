@@ -1,33 +1,14 @@
 Credit Rating based on Account data
 ===
 
-Sinatra app for handling account data to generate a credit rating.
+Aim is to obtain bank account movements and translate those into a credit
+rating. This is only a demostration and utilises [Figo](https://figo.io)
+for obtaining bank account data.
 
-Prerequistes
----
-
-Before deploying to Heroku, you need to generate key/IV for the encryption
-of the credentials.
-
-Generate a new cred key with:
-
-    rake shell
-    prompt> cipher = OpenSSL::Cipher::AES.new(128, :CBC)
-    prompt> cipher.encrypt
-    prompt> Base64.encode64(cipher.random_key) ## value for CRED_KEY_BASE64
-    prompt> Base64.encode64(cipher.random_iv) ## value for CRED_IV_BASE64
-
-
-Generating Private/Public key pair suitable for password encryption:
-
-    openssl genrsa -out mykey.pem 2048
-    openssl rsa -in mykey.pem -pubout > mykey.pub
-
-Or using ruby:
-
-    key = OpenSSL::PKey::RSA.generate(2048)
-    key.export # private key
-    key.public_key.export
+Since Figo requires registration in order to fully utilise their service,
+you should first obtain a fully working API credentials. Failing that,
+this demo application tries to do as much as possible with the
+[demo credentials](http://docs.figo.io/v2/index.html).
 
 Features
 ---
@@ -36,16 +17,44 @@ Features
   2. Bank Account data import
   3. Bank Account transaction data automatic import
   4. Credit Rating Badge
+  5. [Figo](https://figo.io) support
 
 Local testing
 ---
 
-Generate a ```.env``` file by running:
+Install [Docker](https://docker.com) and do once:
 
-    bundle exec rake appjson:to_dotenv
+    docker volume create --name=credratdb
+    docker volume create --name=credratenv
+    docker network create credratnet
 
-This will do it's best to generate test environment including setting
-up the various ciphers and keys.
+Then build the docker image and start it:
+
+    docker-compose build
+    docker-compose up
+
+The ```up``` command will start the web server, the migration server
+and the import server. The migration server will run once and ensure the
+database has been migrated. Import server runs every ten minutes and imports
+account data from Figo.
+
+Now you should be able to access localhost:
+
+    open -a Firefox http://localhost:3000
+
+First thing to do is registration. This can be any email address and
+it won't send an emails (it will send emails if you have an Mandrill
+API token at hand).
+
+After confirming your email, login with the email.
+
+Now you need to wait 10 minutes until the import task retrieves your
+"account data" from Figo. This will be test data but suffices to demostrate
+how the application works.
+
+After ten minutes, you can view account data, rating and generate a badge.
+Again, this is all very basic and does not aim for completion. It just
+demostrates how to use the Figo API.
 
 Bootstrapping
 ---
@@ -62,3 +71,8 @@ After that, the following tasks should be run regularly:
 
 These takes ensure things are up-to-date and that transactions are
 retrieved as soon as they become available.
+
+License
+---
+
+MIT

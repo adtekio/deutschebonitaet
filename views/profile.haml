@@ -38,7 +38,7 @@
         Password:
       .col-md-3
         %span#password.hide
-          = Base64.encode64(@user.creds["figo_password"])
+          = Base64.encode64(@user.creds["figo_password"] || "")
         %a#passbtn.btn.btn-warning{"data-clipboard-target" => "#password", "data-icon" => "copy", :title => "Copy Password"} Copy Password
     .row
       .col-md-2

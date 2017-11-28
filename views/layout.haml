@@ -1,7 +1,7 @@
 !!!
 %html
   %head
-    %title Account Data
+    %title Credit Rating
     %meta{:charset => "UTF-8"}/
     %meta{:content => "IE=edge", "http-equiv" => "X-UA-Compatible"}/
     %meta{:content => "width=device-width, initial-scale=1.0", :name => "viewport"}/
@@ -25,7 +25,7 @@
             %span.icon-bar
             %span.icon-bar
             %span.icon-bar
-          %a.navbar-brand{:href => "/"} Account Data
+          %a.navbar-brand{:href => "/"} Credit Rating
         #navbar.collapse.navbar-collapse
           %ul.nav.navbar-nav
             - if is_logged_in?
@@ -69,7 +69,6 @@
       = yield
 
     %footer.footer
-      .container
-        %p.text-muted Copyright 2017 No One Inc.
+      &nbsp;
 
     %script{:src => "/javascript/enc/bootstrap.min.js"}
